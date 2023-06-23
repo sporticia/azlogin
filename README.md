@@ -118,7 +118,48 @@ Where the `credentials.json` file contains this.
 
 > NOTE: I had to refresh my browser windows completely to get the federated credential to appear in the list on the browser!?
 
+## Store service principal values in Github secrets store
 
+Store the json outputs in GitHub Actions secrets and variables `Settings ==> Actions secrets and variables`.
+
+You will need to save each of the below values:
+
+| GitHub Secret Name | Azure AD Value |
+| ------------- | ---------------------------------- |
+| AZURE_CLIENT_ID | Application (client) ID |
+| AZURE_TENANT_ID | Directory (tenant) ID |
+| AZURE_SUBSCRIPTION_ID | Subscription ID |
+
+and then reference them in the workflow.
+
+```yaml
+on:
+  # Show manual 'Run workflow button'
+  workflow_dispatch:
+
+name: 'Azure Login Service Principal'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Az CLI login'
+    - uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: 'Run Azure CLI commands'
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          az account show
+          az group list
+          pwd
+          echo 'Service Principal'
+```
 ## Create secrets in Github secrets
 | GitHub Secret Name | Azure AD Value |
 | ------------- | ---------------------------------- |
