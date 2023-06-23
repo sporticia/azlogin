@@ -1,0 +1,24 @@
+on:
+  # Show manual 'Run workflow button'
+  workflow_dispatch:
+
+name: 'Azure Login Service Principal'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Az CLI login'
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDS }}
+
+    - name: 'Run Azure CLI commands'
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          az account show
+          az group list
+          pwd
+          echo 'Service Principal'
